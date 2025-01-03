@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tile.Core", "Tile.Core.csproj", "{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Start-net4.8|Any CPU = Start-net4.8|Any CPU
+		Start-net7|Any CPU = Start-net7|Any CPU
+		Start-Rhino7|Any CPU = Start-Rhino7|Any CPU
+		Start-Rhino8|Any CPU = Start-Rhino8|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Start-net4.8|Any CPU.ActiveCfg = Debug|x64
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Start-net4.8|Any CPU.Build.0 = Debug|x64
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Start-net7|Any CPU.ActiveCfg = Start-net7|x64
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Start-net7|Any CPU.Build.0 = Start-net7|x64
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Start-Rhino7|Any CPU.ActiveCfg = Start-Rhino7|x64
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Start-Rhino7|Any CPU.Build.0 = Start-Rhino7|x64
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Start-Rhino8|Any CPU.ActiveCfg = Start-Rhino8|x64
+		{2C33B7E7-6D3E-41CB-BAE2-C2028EE11CCC}.Start-Rhino8|Any CPU.Build.0 = Start-Rhino8|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9E6AB0C1-0A43-49D4-96FA-7EE8B8E7FF3F}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Tile.Core": {
+      "commandName": "Project"
+    },
+    "Start-Rhino8": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\Rhino 8\\System\\Rhino.exe",
+      "commandLineArgs": "/netfx /nosplash"
+    },
+    "Start-Rhino7": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\Rhino 7\\System\\Rhino.exe"
+    }
+  }
+}

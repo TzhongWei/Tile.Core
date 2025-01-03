@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net48</TargetFramework>
+	  <Version>1.0</Version>
+	<Platforms>AnyCPU;x64</Platforms>
+	<Configurations>Debug;Release;Start-Rhino7;Start-Rhino8;</Configurations>
+	  <TargetExt>.gha</TargetExt>
+  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Start-Rhino8'">
+		<DefineConstants>Rhino8Net48</DefineConstants>
+	</PropertyGroup>
+
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Start-Rhino7'">
+		<DefineConstants>Rhino7Net48</DefineConstants>
+	</PropertyGroup>
+	
+  <ItemGroup Condition="'$(Configuration)' == 'Start-Rhino8'">
+    <PackageReference Include="Grasshopper" Version="8.10.24226.13001" />
+    <PackageReference Include="RhinoCommon" Version="8.10.24226.13001" />
+  </ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'Start-Rhino7'">
+		<PackageReference Include="Grasshopper" Version="7.6.21127.19001" />
+		<PackageReference Include="RhinoCommon" Version="7.6.21127.19001" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+</Project>
