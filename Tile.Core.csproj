@@ -2,10 +2,8 @@
 
   <PropertyGroup>
 	  <TargetFramework>net48</TargetFramework>
-	  <Version>1.0</Version>
 	<Platforms>AnyCPU;x64</Platforms>
 	<Configurations>Debug;Release;Start-Rhino7;Start-Rhino8;</Configurations>
-	  <TargetExt>.gha</TargetExt>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Start-Rhino8'">
