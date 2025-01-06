@@ -14,6 +14,7 @@ namespace Tile.Core
         public bool Frame;
         public List<ObjectAttributes> PatternAtts;
         public bool ColourFromObject;
+        //Geometry Guids in Rhino
         public List<System.Guid> Guids;
     }
 }

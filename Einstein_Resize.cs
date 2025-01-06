@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Rhino;
 using Rhino.DocObjects;
 using Rhino.Geometry;
+using Rhino.UI;
 using Tile.Core.Util;
 
 namespace Tile.Core
@@ -18,7 +19,7 @@ namespace Tile.Core
         private Transform Translation = new Transform();
         private HatGroup<int> _HatID;
         public List<GeometryBase> HPatterns = new List<GeometryBase>();
-        private TilePatterns[] PatternsManager = new TilePatterns[5];
+        //private TilePatterns[] PatternsManager = new TilePatterns[5];
 
         public Einstein SetTile { private get; set; } = new Einstein();
         public Einstein_Resize(double size, Point3d StartPt)
@@ -27,34 +28,34 @@ namespace Tile.Core
             else this.Hatsize = size;
             this.Translation = Transform.Translation(new Vector3d(StartPt.X, StartPt.Y, StartPt.Z));
             Label[] LabelTags = { Label.H, Label.H1, Label.T, Label.P, Label.F };
-
-            //Initialise Patterns
-            for (int i = 0; i < this.PatternsManager.Length; i++)
+        }
+        public bool SelectBlockID(List<string> Name)
+        {
+            if (Name.Count != 5)
             {
-                var Patterns = new TilePatterns();
-                Patterns.label = LabelTags[i];
-                Patterns.Patterns = new List<GeometryBase>();
-                Patterns.PatternAtts = new List<ObjectAttributes>();
-                Patterns.Guids = new List<System.Guid>();
-                Patterns.ColourFromObject = false;
-                this.PatternsManager[i] = Patterns;
+                if (Name.Count > 5)
+                {
+                    var NewName = new List<string>();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        NewName.Add(Name[i]);
+                    }
+                }
+                else
+                    while (Name.Count != 5)
+                    {
+                        Name.Add(Name.Last());
+                    }
             }
-        }
-        public void NewSetPatterns(List<AddPatternOption> Options)
-        {
-            PatternFunction.NewSetPatterns(Options, ref this.PatternsManager);
-        }
-        public void NewSetFrame()
-        {
-            PatternFunction.NewSetFrame(ref PatternsManager);
-        }
 
-        public bool SetNewBlock(List<string> Name = null, bool Blockoverride = true)
-        {
-            _HatID = new HatGroup<int>(PatternFunction.SetNewBlock(ref this.PatternsManager, Name, Blockoverride));
+            for (int i = 0; i < Name.Count; i++)
+            {
+                _HatID[i] = HatTileDoc.BlockInstances.Find(Name[i]).BlockIndex;
+                if (_HatID[i] == -1)
+                    throw new Exception($"The {Name[i]} isn't existed.");
+            }
             return true;
         }
-
         public List<Curve> PreviewShape()
         {
             if (SetTile.Hat_Transform.Count <= 0) return new List<Curve>();
@@ -79,6 +80,51 @@ namespace Tile.Core
                 sortedCurve = indexes.Select(i => HatCrvs.ElementAt(i)).ToList();
             }
             return sortedCurve;
+        }
+        public bool PlaceBlock(Einstein MonoTile)
+        {
+            if (this.Hatsize < 0 || MonoTile.Hat_Labels.Count != MonoTile.Hat_Transform.Count ||
+                    MonoTile.Hat_Labels.Count < 0)
+                return false;
+            var Doc = RhinoDoc.ActiveDoc;
+            string[] LayerName = { "Hat_H", "Hat_H1", "Hat_T", "Hat_P", "Hat_F" };
+            if (_HatID.Hat_F_ID < 0)
+                throw new Exception("Objects hasn't been defined as blocks");
+
+            var labels = MonoTile.Hat_Labels;
+            var Transforms = MonoTile.Hat_Transform;
+            var Scale = Transform.Scale(Point3d.Origin, Hatsize);
+            for (int i = 0; i < Transforms.Count; i++)
+            {
+                var Final = Translation * Scale * Transforms[i];
+                ObjectAttributes Att = new ObjectAttributes();
+                switch (labels[i])
+                {
+                    case "H":
+                        Att.LayerIndex = Doc.Layers.FindName(LayerName[0]).Index;
+                        Doc.Objects.AddInstanceObject(_HatID[0], Final, Att);
+                        break;
+                    case "H1":
+                        Att.LayerIndex = Doc.Layers.FindName(LayerName[1]).Index;
+                        Doc.Objects.AddInstanceObject(_HatID[1], Final, Att);
+                        break;
+                    case "T":
+                        Att.LayerIndex = Doc.Layers.FindName(LayerName[2]).Index;
+                        Doc.Objects.AddInstanceObject(_HatID[2], Final, Att);
+                        break;
+                    case "P":
+                        Att.LayerIndex = Doc.Layers.FindName(LayerName[3]).Index;
+                        Doc.Objects.AddInstanceObject(_HatID[3], Final, Att);
+                        break;
+                    case "F":
+                        Att.LayerIndex = Doc.Layers.FindName(LayerName[4]).Index;
+                        Doc.Objects.AddInstanceObject(_HatID[4], Final, Att);
+                        break;
+                    default:
+                        return false;
+                }
+            }
+            return true;
         }
     }
 }

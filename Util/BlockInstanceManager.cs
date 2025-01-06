@@ -1,0 +1,121 @@
+﻿using Rhino.DocObjects;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Tile.Core.Util
+{
+    public class BlockInstanceManager : IList<BlockInstance>
+    {
+        private HashSet<BlockInstance> _BlockInstance = new HashSet<BlockInstance>();
+        public BlockInstance this[int index] { get => this._BlockInstance.ToList()[index]; set
+            {
+                if (value == null || _BlockInstance.Contains(value))
+                    throw new ArgumentException("Value is repeated.");
+                else
+                    this._BlockInstance.Add(value);
+            } 
+        }
+
+        public int Count => this._BlockInstance.Count;
+
+        public bool IsReadOnly => this._BlockInstance.Count > 0;
+
+        public void Add(BlockInstance item)
+        {
+            if (item == null || _BlockInstance.Contains(item))
+                throw new ArgumentException("Value is repeated.");
+            else
+                this._BlockInstance.Add(item);
+        }
+        public void Add(InstanceDefinition instance)
+        {
+            var _label = instance.GetUserString("Label");
+            if (_label == null) return;
+            Label label = Label.H1;
+            switch(_label)
+            {
+                case ("H1"):
+                    label = Label.H1;
+                    break;
+                case ("H"):
+                    label = Label.H;
+                    break;
+                case ("T"):
+                    label = Label.T;
+                    break;
+                case ("P"):
+                    label = Label.P;
+                    break;
+                case ("F"):
+                    label = Label.F;
+                    break;
+                default: throw new ArgumentException("Error Label");
+            }
+            var HatInstance = new BlockInstance(label, instance.GetUserString("BlockName"));
+            this._BlockInstance.Add(HatInstance);
+        }
+        public void Clear()
+        {
+            this._BlockInstance.Clear();
+        }
+
+        public bool Contains(BlockInstance item)
+        => this._BlockInstance.Contains(item);
+        public bool Contains(string Name)
+            => this._BlockInstance.Where(x => x.BlockName == Name).ToList().Count == 0 ? false : true;
+        
+
+        public void CopyTo(BlockInstance[] array, int arrayIndex)
+        {
+            this._BlockInstance.CopyTo(array, arrayIndex);
+        }
+
+        public IEnumerator<BlockInstance> GetEnumerator()
+            => this._BlockInstance.GetEnumerator();
+        
+
+        public int IndexOf(BlockInstance item)
+        => this._BlockInstance.ToList().IndexOf(item);
+
+        public void Insert(int index, BlockInstance item)
+        {
+            if (_BlockInstance.Contains(item))
+                throw new ArgumentException("Value is repeated");
+
+            var InstanceList = _BlockInstance.ToList();
+            InstanceList.Insert(index, item);
+            _BlockInstance = new HashSet<BlockInstance>();
+            for(int i = 0; i < InstanceList.Count; i++)
+                _BlockInstance.Add(InstanceList[i]);
+        }
+        /// <summary>
+        /// Remove the block instance from both this program and rhino instances
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool Remove(BlockInstance item)
+            => item == null ? false : this._BlockInstance.Remove(item) & 
+                Rhino.RhinoDoc.ActiveDoc.InstanceDefinitions.Delete(item.BlockIndex, true, true);
+        public bool Remove(string Name)
+            => this.Remove(this.Find(Name));
+
+        public BlockInstance Find(string Name)
+            => this.Contains(Name) ? this._BlockInstance.Where(x => x.BlockName == Name).First() : null;
+        public BlockInstance FindID(int index)
+        {
+            var Instance = this._BlockInstance.Where(x => x.BlockIndex == index).ToList();
+            return Instance.Count == 0? null : Instance[0];
+        }
+        public void RemoveAt(int index)
+        {
+            this._BlockInstance.ToList().RemoveAt(index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+            => this._BlockInstance?.GetEnumerator();
+    }
+}
