@@ -6,15 +6,21 @@ using Rhino.Geometry;
 
 namespace Tile.Core
 {
-    public struct TilePatterns
+    /// <summary>
+    /// This class focuses on the geometry aspects
+    /// </summary>
+    public class TilePatterns
     {
-        public bool HasFrame;
+        //Test if the patterns has a frame
+        //public bool HasFrame;
         public Label label;
         public List<GeometryBase> Patterns;
+        //The patterns has a frame from the setting
         public bool Frame;
         public List<ObjectAttributes> PatternAtts;
         public bool ColourFromObject;
         //Geometry Guids in Rhino
         public List<System.Guid> Guids;
+        public TilePatterns() { }
     }
 }

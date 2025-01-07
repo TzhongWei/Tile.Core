@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Tile.Core.Util
 {
@@ -33,30 +34,31 @@ namespace Tile.Core.Util
         }
         public void Add(InstanceDefinition instance)
         {
-            var _label = instance.GetUserString("Label");
-            if (_label == null) return;
-            Label label = Label.H1;
-            switch(_label)
-            {
-                case ("H1"):
-                    label = Label.H1;
-                    break;
-                case ("H"):
-                    label = Label.H;
-                    break;
-                case ("T"):
-                    label = Label.T;
-                    break;
-                case ("P"):
-                    label = Label.P;
-                    break;
-                case ("F"):
-                    label = Label.F;
-                    break;
-                default: throw new ArgumentException("Error Label");
-            }
+            var blockName = instance.GetUserString("BlockName");
+            if (string.IsNullOrWhiteSpace(blockName) || this.Contains(blockName))
+                throw new ArgumentException($"Block with name '{blockName}' already exists.");
+
+            Label label = ParseLabel(instance.GetUserString("Label"));
             var HatInstance = new BlockInstance(label, instance.GetUserString("BlockName"));
             this._BlockInstance.Add(HatInstance);
+        }
+        private Label ParseLabel(string labelString)
+        {
+            switch (labelString)
+            {
+                case "H1":
+                    return Label.H1;
+                case "H":
+                    return Label.H;
+                case "T":
+                    return Label.T;
+                case "P":
+                    return Label.P;
+                case "F":
+                    return Label.F;
+                default:
+                    throw new ArgumentException($"Invalid label: {labelString}");
+            }
         }
         public void Clear()
         {
@@ -83,14 +85,12 @@ namespace Tile.Core.Util
 
         public void Insert(int index, BlockInstance item)
         {
-            if (_BlockInstance.Contains(item))
+            var instanceList = _BlockInstance.ToList();
+            if (instanceList.Contains(item))
                 throw new ArgumentException("Value is repeated");
 
-            var InstanceList = _BlockInstance.ToList();
-            InstanceList.Insert(index, item);
-            _BlockInstance = new HashSet<BlockInstance>();
-            for(int i = 0; i < InstanceList.Count; i++)
-                _BlockInstance.Add(InstanceList[i]);
+            instanceList.Insert(index, item);
+            _BlockInstance = new HashSet<BlockInstance>(instanceList);
         }
         /// <summary>
         /// Remove the block instance from both this program and rhino instances
@@ -104,7 +104,7 @@ namespace Tile.Core.Util
             => this.Remove(this.Find(Name));
 
         public BlockInstance Find(string Name)
-            => this.Contains(Name) ? this._BlockInstance.Where(x => x.BlockName == Name).First() : null;
+            => _BlockInstance.FirstOrDefault(x => x.BlockName == Name);
         public BlockInstance FindID(int index)
         {
             var Instance = this._BlockInstance.Where(x => x.BlockIndex == index).ToList();

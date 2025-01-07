@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Tile.Core.Util
 {
@@ -14,19 +15,33 @@ namespace Tile.Core.Util
     /// </summary>
     public static class HatTileDoc
     {
-        public static BlockInstanceManager BlockInstances;
+        private static readonly BlockInstanceManager _blockInstances;
+
+        private static readonly object _lock = new object();
+
+        public static BlockInstanceManager BlockInstances
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _blockInstances;
+                }
+            }
+        }
+
         static HatTileDoc() 
         {
-            BlockInstances = InitialBlock();
+            _blockInstances = InitialBlock();
         }
         /// <summary>
         /// Provide the block name list
         /// </summary>
         /// <returns></returns>
         public static List<string> HatBlock_NameList()
-            => BlockInstances.Select(x => x.BlockName).ToList();
+            => _blockInstances.Select(x => x.BlockName).ToList();
         public static List<string> HatBlock_NameList(Label label)
-            => BlockInstances.Where(x => x.BlockLabel == label).Select(x=>x.BlockName).ToList();
+            => _blockInstances.Where(x => x.BlockLabel == label).Select(x=>x.BlockName).ToList();
         /// <summary>
         /// Initialise the block system from rhino
         /// </summary>
@@ -36,10 +51,18 @@ namespace Tile.Core.Util
             var Manager = new BlockInstanceManager();
             var RHDoc = Rhino.RhinoDoc.ActiveDoc.InstanceDefinitions;
 
-            foreach(var Instance in RHDoc)
+            foreach (var instance in RHDoc)
             {
-                if (Instance.GetUserString("Hat") != "HatDoc") continue;
-                Manager.Add(Instance);
+                if (instance.GetUserString("Hat") != "HatDoc") continue;
+
+                try
+                {
+                    Manager.Add(instance);
+                }
+                catch (Exception ex)
+                {
+                    RhinoApp.WriteLine($"Failed to add instance: {instance.Name}. Error: {ex.Message}");
+                }
             }
             return Manager;
         }
@@ -53,6 +76,13 @@ namespace Tile.Core.Util
         /// <returns></returns>
         internal static bool AddNewHatInstance(string Name, TilePatterns tilePatterns, out int ID)
         {
+            ID = -1;
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                RhinoApp.WriteLine("Invalid block name.");
+                return false;
+            }
+
             var Ins = RhinoDoc.ActiveDoc.InstanceDefinitions;
             if(Ins.Find(Name) is null)
             {
@@ -62,32 +92,37 @@ namespace Tile.Core.Util
                     tilePatterns.Patterns,
                     tilePatterns.PatternAtts
                     );
-
+                if (ID <= 0)
+                {
+                    throw new Exception($"Instance Define errpr");
+                }
                 //SetUserString
                 var InsObj = Ins[ID];
-                InsObj.SetUserString("Hat", "Hat");
+                InsObj.SetUserString("Hat", "HatDoc");
                 InsObj.SetUserString("BlockName", Name);
                 InsObj.SetUserString("Label", tilePatterns.label.ToString());
                 InsObj.SetUserString("ID", ID.ToString());
+                InsObj.SetUserString("Frame", tilePatterns.Frame.ToString());
+                InsObj.SetUserString("ColourFromObject", tilePatterns.ColourFromObject.ToString());
 
-                BlockInstances.Add( InsObj );
+                _blockInstances.Add( InsObj );
 
                 return true;
             }
             else
             {
-                ID = -1;
-                return false;
+                throw new Exception($"Block with name '{Name}' already exists.");
             }
         }
         internal static bool RemoveHatInstance(string Name)
         {
-            if(!BlockInstances.Contains(Name)) return false;
+            if(!_blockInstances.Contains(Name)) return false;
             else
             {
-                BlockInstances.Remove(Name);
+                _blockInstances.Remove(Name);
                 return true;
             }
         }
+        
     }
 }

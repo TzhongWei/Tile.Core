@@ -8,6 +8,7 @@ using Grasshopper.Kernel.Types;
 using Tile.Core.Util;
 using Rhino.Geometry;
 using Rhino.DocObjects;
+using GH_IO.Serialization;
 
 namespace Tile.Core.Grasshopper
 {
@@ -29,8 +30,6 @@ namespace Tile.Core.Grasshopper
         {
             pManager.AddTextParameter("EinsteinBlockName", "N", "The defined einstein block Name", GH_ParamAccess.list);
         }
-        private bool IsSetblock = false;
-        private List<GeometryBase> Geoms = new List<GeometryBase>();
         private (int, int, int, int, int) ID = (-1, -1, -1, -1, -1);
         protected override void SolveInstance(IGH_DataAccess DA)
         {
@@ -40,7 +39,8 @@ namespace Tile.Core.Grasshopper
             
             DA.GetData("SetEinsteinInstance", ref Defined);
             DA.GetDataList<AddPatternOption>("PatternOptions", Options);
-            this.Geoms.Add((new Einstein.HatTile("Outline")).PreviewShape);
+            
+
             Label[] LabelTags = { Label.H, Label.H1, Label.T, Label.P, Label.F };
             for (int i = 0; i < PatternsManager.Length; i++)
             {
@@ -52,7 +52,6 @@ namespace Tile.Core.Grasshopper
                 Patterns.ColourFromObject = false;
                 PatternsManager[i] = Patterns;
             }
-
             if (Defined)
             {
                 if (Options.Count > 0)
@@ -93,10 +92,10 @@ namespace Tile.Core.Grasshopper
                 else
                 {
                     Util.PatternFunction.NewSetFrame(ref PatternsManager);
-                    
                     ID = Util.PatternFunction.SetNewBlock(ref PatternsManager);
                 }
             }
+
             if (!
                 (ID.Item1 == -1 | 
                 ID.Item2 == -1 | 
@@ -115,5 +114,6 @@ namespace Tile.Core.Grasshopper
             }
             
         }
+        
     }
 }
