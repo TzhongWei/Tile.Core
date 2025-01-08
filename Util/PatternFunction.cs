@@ -67,33 +67,33 @@ namespace Tile.Core.Util
             Tile.Patterns = Tile.Patterns.Select(x => x.Duplicate()).ToList();
             Tile.PatternAtts = Tile.PatternAtts.Select(x => x.Duplicate()).ToList();
             Tile.label = label;
-            //Tile.HasFrame = false;
+            Tile.HasFrame = false;
             return Tile;
         }
         public static void NewSetFrame(ref TilePatterns[] PatternsManager)
         {
             for (int i = 0; i < PatternsManager.Length; i++)
             {
-                if (PatternsManager[i].Frame) return;
+                if (PatternsManager[i].HasFrame) return;
                 PatternsManager[i].Patterns.Add((new Einstein.HatTile("Outline")).PreviewShape);
                 ObjectAttributes Att = new ObjectAttributes();
                 Att.ColorSource = ObjectColorSource.ColorFromLayer;
                 PatternsManager[i].PatternAtts.Add(Att);
                 PatternsManager[i].Frame = true;
-                //PatternsManager[i].HasFrame = true;
+                PatternsManager[i].HasFrame = true;
             }
         }
         public static void NewSetFrame(ref TilePatterns[] PatternsManager, Core.Label label)
         {
             ObjectAttributes Att = new ObjectAttributes();
             int Index = (int)label;
-            if (PatternsManager[Index].Frame) return;
+            if (PatternsManager[Index].HasFrame) return;
             PatternsManager[Index].Patterns.Add((new Einstein.HatTile("Outline")).PreviewShape);
             Att = new ObjectAttributes();
             Att.ColorSource = ObjectColorSource.ColorFromLayer;
             PatternsManager[Index].PatternAtts.Add(Att);
             PatternsManager[Index].Frame = true;
-            //PatternsManager[Index].HasFrame = true;
+            PatternsManager[Index].HasFrame = true;
         }
         public static List<int> SetNewBlock(ref TilePatterns[] PatternsManager, List<string> Names = null)
         {

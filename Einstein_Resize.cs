@@ -12,7 +12,7 @@ using Tile.Core.Util;
 
 namespace Tile.Core
 {
-    public class Einstein_Resize: Einstein, IPermutation
+    public class Einstein_Resize: Einstein
     {
         private double Hatsize = 1;
         public int[] BlocksId = new int[5];
@@ -97,8 +97,9 @@ namespace Tile.Core
             }
             return sortedCurve;
         }
-        public bool PlaceBlock(Einstein MonoTile, out List<BlockInstance> Tiles)
+        public bool PlaceBlock(Einstein MonoTile, out List<BlockInstance> Tiles, out List<Transform> History)
         {
+            History = new List<Transform>();
             Tiles = new List<BlockInstance>();
             if (this.Hatsize < 0 || MonoTile.Hat_Labels.Count != MonoTile.Hat_Transform.Count ||
                     MonoTile.Hat_Labels.Count < 0)
@@ -141,6 +142,7 @@ namespace Tile.Core
                     default:
                         return false;
                 }
+                History.Add(Final);
             }
             return true;
         }

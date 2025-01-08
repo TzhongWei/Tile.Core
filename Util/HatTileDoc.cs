@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace Tile.Core.Util
@@ -42,6 +43,31 @@ namespace Tile.Core.Util
             => _blockInstances.Select(x => x.BlockName).ToList();
         public static List<string> HatBlock_NameList(Label label)
             => _blockInstances.Where(x => x.BlockLabel == label).Select(x=>x.BlockName).ToList();
+
+        /// <summary>
+        /// If the initialblock() cannot work, you have to use this function to renew the list
+        /// use it when it's enmergency
+        /// </summary>
+        public static void ForceUpdate()
+        {
+            _blockInstances.Clear();
+            var RHDoc = Rhino.RhinoDoc.ActiveDoc.InstanceDefinitions;
+            foreach (var instance in RHDoc)
+            {
+                if (RhinoDoc.ActiveDoc.InstanceDefinitions.Find(instance.Name) == null) continue;
+                if (instance.GetUserString("Hat") != "HatDoc") continue;
+
+                try
+                {
+                    _blockInstances.Add(instance);
+                }
+                catch (Exception ex)
+                {
+                    RhinoApp.WriteLine($"Failed to add instance: {instance.Name}. Error: {ex.Message}");
+                }
+            }
+        }
+
         /// <summary>
         /// Initialise the block system from rhino
         /// </summary>
@@ -53,6 +79,7 @@ namespace Tile.Core.Util
 
             foreach (var instance in RHDoc)
             {
+                if (RhinoDoc.ActiveDoc.InstanceDefinitions.Find(instance.Name) == null) continue;
                 if (instance.GetUserString("Hat") != "HatDoc") continue;
 
                 try

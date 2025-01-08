@@ -16,7 +16,7 @@ namespace Tile.Core.Grasshopper
         public ChangeLabel():base("ChangeLabel", "ChLabel", "this component change the label of the tile component", "Einstein", "Einstein") 
         { }
         public override Guid ComponentGuid => new Guid("66E97349-D335-4BCF-9658-3B2F0FC1BC61");
-        protected override Bitmap Icon => base.Icon;
+        protected override Bitmap Icon => Properties.Resources.Change;
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
             pManager.AddParameter(new GH_TileInstance(), "HatTileInstance", "ET", "The Einstein Hat tile instance block", GH_ParamAccess.item);

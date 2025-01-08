@@ -11,11 +11,11 @@ namespace Tile.Core
     /// </summary>
     public class TilePatterns
     {
-        //Test if the patterns has a frame
-        //public bool HasFrame;
+        //Test if the patterns has a frame instance in the Patterns List
+        public bool HasFrame;
         public Label label;
         public List<GeometryBase> Patterns;
-        //The patterns has a frame from the setting
+        //The patterns needs a geometry frame from the setting
         public bool Frame;
         public List<ObjectAttributes> PatternAtts;
         public bool ColourFromObject;

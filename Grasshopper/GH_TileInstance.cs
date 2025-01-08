@@ -27,7 +27,7 @@ namespace Tile.Core.Grasshopper
         public BoundingBox ClippingBox => Preview_ComputeClippingBox();
 
 
-        protected override Bitmap Icon => base.Icon;
+        protected override Bitmap Icon => Properties.Resources.Einstein_Outline;
 
         public void DrawViewportWires(IGH_PreviewArgs args) => Preview_DrawMeshes(args);
         public void DrawViewportMeshes(IGH_PreviewArgs args) => Preview_DrawMeshes(args);

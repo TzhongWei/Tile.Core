@@ -1,4 +1,5 @@
-﻿using Rhino.DocObjects;
+﻿using Rhino;
+using Rhino.DocObjects;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -65,7 +66,25 @@ namespace Tile.Core.Util
             this._BlockInstance.Clear();
             Rhino.RhinoDoc.ActiveDoc.InstanceDefinitions.Clear();
         }
+        public void Reinitial()
+        {
+            this._BlockInstance.Clear();
+            var RHDoc = Rhino.RhinoDoc.ActiveDoc.InstanceDefinitions;
+            foreach (var instance in RHDoc)
+            {
+                if (RhinoDoc.ActiveDoc.InstanceDefinitions.Find(instance.Name) == null) continue;
+                if (instance.GetUserString("Hat") != "HatDoc") continue;
 
+                try
+                {
+                    this.Add(instance);
+                }
+                catch (Exception ex)
+                {
+                    RhinoApp.WriteLine($"Failed to add instance: {instance.Name}. Error: {ex.Message}");
+                }
+            }
+        }
         public bool Contains(BlockInstance item)
         => this._BlockInstance.Contains(item);
         public bool Contains(string Name)

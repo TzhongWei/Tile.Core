@@ -14,7 +14,7 @@ namespace Tile.Core.Grasshopper
     {
         public HatGroup():base("HatGroup", "HGroup", "This component is to sort out the input hat with desired labels and send as a group", "Einstein", "Einstein") { }
         public override Guid ComponentGuid => new Guid("{D3944476-5B1D-4B9A-9BB2-BCC21241E7E3}");
-        protected override Bitmap Icon => base.Icon;
+        protected override Bitmap Icon => Properties.Resources.group;
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
             pManager.AddParameter(new GH_TileInstance(), "Hat_H", "H", "The desired H tile type", GH_ParamAccess.item);

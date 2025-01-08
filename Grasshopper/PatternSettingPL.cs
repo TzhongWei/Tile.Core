@@ -15,7 +15,7 @@ namespace Tile.Core.Grasshopper
     public class PatternSetting : GH_Component
     {
         public PatternSetting() : base("PatternSetting", "Pattern",
-           "This setting is filling the patterns for einstein block", "Einstein", "Einstein")
+           "This component sets the patterns for einstein block", "Einstein", "Einstein")
         { }
 
         public override Guid ComponentGuid => new Guid("86B1C38A-2B70-45A0-B52E-08E86FDA5BAE");

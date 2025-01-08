@@ -63,6 +63,16 @@ namespace Tile.Core.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Change {
+            get {
+                object obj = ResourceManager.GetObject("Change", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Einstein_core {
             get {
                 object obj = ResourceManager.GetObject("Einstein_core", resourceCulture);
@@ -83,6 +93,46 @@ namespace Tile.Core.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Einstein_core_4 {
+            get {
+                object obj = ResourceManager.GetObject("Einstein_core_4", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Einstein_Outline {
+            get {
+                object obj = ResourceManager.GetObject("Einstein_Outline", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EinsteinInfo {
+            get {
+                object obj = ResourceManager.GetObject("EinsteinInfo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap group {
+            get {
+                object obj = ResourceManager.GetObject("group", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Pattern_patch {
             get {
                 object obj = ResourceManager.GetObject("Pattern_patch", resourceCulture);
@@ -96,6 +146,16 @@ namespace Tile.Core.Properties {
         internal static System.Drawing.Bitmap Pattern_patch_2 {
             get {
                 object obj = ResourceManager.GetObject("Pattern_patch_2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Pattern_patch_5 {
+            get {
+                object obj = ResourceManager.GetObject("Pattern_patch_5", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

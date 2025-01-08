@@ -20,7 +20,7 @@ namespace Tile.Core.Grasshopper
             "Einstein", "Einstein")
         { }
         public override Guid ComponentGuid => new Guid("FB10CCF6-BEB5-4673-9609-7C90EBAD9D24");
-        protected override Bitmap Icon => base.Icon;
+        protected override Bitmap Icon => Properties.Resources.Einstein_core_4;
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
             pManager.AddTextParameter("TileName", "N", "The name of the hat tile, the RhinoInstanceObject Name", GH_ParamAccess.item);

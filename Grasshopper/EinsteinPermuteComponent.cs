@@ -34,6 +34,7 @@ namespace Tile.Core.Grasshopper
             pManager.AddTransformParameter("Transformation", "TS", "The permutation transformation of the hats", GH_ParamAccess.list);
         }
         private List<BlockInstance> EinTiles = new List<BlockInstance>();
+        private List<Transform> History = new List<Transform>();
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             double _Scale = double.NaN;
@@ -55,29 +56,12 @@ namespace Tile.Core.Grasshopper
 
             if (Run)
             {
-                ResizeEin.PlaceBlock(Ein, out EinTiles);
+                ResizeEin.PlaceBlock(Ein, out EinTiles, out History);
             }
            
 
             DA.SetDataList("HatTileInstances", EinTiles);
-            DA.SetDataList("Transformation", ResizeEin.Hat_Transform);
+            DA.SetDataList("Transformation", History);
         }
-        //public override void DrawViewportWires(IGH_PreviewArgs args)
-        //{
-        //    if (EinTiles == null) return;
-        //    foreach(var Tile in EinTiles) 
-        //    {
-        //        Tile?.DrawViewportWires((GH_PreviewWireArgs)args);
-        //    }
-        //}
-        //public override void DrawViewportMeshes(IGH_PreviewArgs args)
-        //{
-        //    if (EinTiles == null) return;
-
-        //    foreach (var tile in EinTiles)
-        //    {
-        //        tile?.DrawViewportMeshes((GH_PreviewMeshArgs)args);
-        //    }
-        //}
     }
 }

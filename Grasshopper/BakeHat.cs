@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace Tile.Core.Grasshopper
     public class BakeHat : GH_Component
     {
         public override Guid ComponentGuid => new Guid("{02442E70-18F5-4E7E-A1D0-D50041489D13}");
+        protected override Bitmap Icon => Properties.Resources.Pattern_patch_5;
         public BakeHat() : base("BakeHat", "bake", "Bake the hat instance into rhino environment", "Einstein", "Einstein") { }
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
