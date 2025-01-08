@@ -28,9 +28,9 @@ namespace Tile.Core.Grasshopper
 
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
-            pManager.AddTextParameter("EinsteinBlockName", "N", "The defined einstein block Name", GH_ParamAccess.list);
+            pManager.AddParameter(new GH_TileInstance(), "HatTileInstance", "ET", "The Einstein Hat tile instance block", GH_ParamAccess.list);
         }
-        private (int, int, int, int, int) ID = (-1, -1, -1, -1, -1);
+        private List<int> ID = new List<int>();
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             bool Defined = false;
@@ -96,24 +96,11 @@ namespace Tile.Core.Grasshopper
                 }
             }
 
-            if (!
-                (ID.Item1 == -1 | 
-                ID.Item2 == -1 | 
-                ID.Item3 == -1 | 
-                ID.Item4 == -1 | 
-                ID.Item5 == -1)
-            )
-            {
-                DA.SetDataList("EinsteinBlockName", new List<string> {
-                HatTileDoc.BlockInstances.FindID(ID.Item1).BlockName,
-                HatTileDoc.BlockInstances.FindID(ID.Item2).BlockName,
-                HatTileDoc.BlockInstances.FindID(ID.Item3).BlockName,
-                HatTileDoc.BlockInstances.FindID(ID.Item4).BlockName,
-                HatTileDoc.BlockInstances.FindID(ID.Item5).BlockName
-            });
+
+
+            DA.SetDataList("HatTileInstance", ID.Select(x => HatTileDoc.BlockInstances.FindID(x)));
             }
             
         }
         
     }
-}

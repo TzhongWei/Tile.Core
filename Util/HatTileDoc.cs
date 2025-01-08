@@ -77,11 +77,11 @@ namespace Tile.Core.Util
         internal static bool AddNewHatInstance(string Name, TilePatterns tilePatterns, out int ID)
         {
             ID = -1;
-            if (string.IsNullOrWhiteSpace(Name))
-            {
-                RhinoApp.WriteLine("Invalid block name.");
-                return false;
-            }
+            //if (string.IsNullOrWhiteSpace(Name))
+            //{
+            //    RhinoApp.WriteLine("Invalid block name.");
+            //    return false;
+            //}
 
             var Ins = RhinoDoc.ActiveDoc.InstanceDefinitions;
             if(Ins.Find(Name) is null)
@@ -92,7 +92,7 @@ namespace Tile.Core.Util
                     tilePatterns.Patterns,
                     tilePatterns.PatternAtts
                     );
-                if (ID <= 0)
+                if (ID < 0)
                 {
                     throw new Exception($"Instance Define errpr");
                 }

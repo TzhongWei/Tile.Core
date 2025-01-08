@@ -12,28 +12,29 @@ using Newtonsoft.Json;
 using Rhino;
 using Rhino.DocObjects;
 using Rhino.Geometry;
+using System.Text.RegularExpressions;
+using Rhino.UI;
 
 namespace Tile.Core.Util
 {
     /// <summary>
-    /// This class refer to the Rhino Instance Definition
+    /// This class refer to the Rhino Instance reference, the definition is placed in the HatTileDoc
     /// </summary>
     public class BlockInstance : GH_InstanceReference
     {
         public Label BlockLabel { get; private set; }
         public string BlockName { get; private set; }
-        public int BlockIndex { get; private set; }
-        public bool IsBlock { get; private set; }
+        public int BlockIndex { get; private set; } = -1;
+        public bool IsBlock { get; private set; } = false;
         public TilePatterns tilePatterns { get; private set; }
-        public BlockInstance(Label blockLabel, string blockName):base(Rhino.Geometry.Transform.Identity)
+        public BlockInstance(Label blockLabel, string blockName) : base(Rhino.Geometry.Transform.Identity)
         {
             BlockLabel = blockLabel;
             BlockName = blockName;
             var RhinoBlock = Rhino.RhinoDoc.ActiveDoc.InstanceDefinitions.Find(blockName);
             BlockIndex = RhinoBlock?.Index ?? -1;
             IsBlock = BlockIndex != -1;
-            IsBlock = BlockIndex != -1;
-            var ColourFromObject = RhinoBlock.GetUserString("ColourFromObject") == "true"? true : false;
+            var ColourFromObject = RhinoBlock.GetUserString("ColourFromObject") == "True" ? true : false;
             var Frame = RhinoBlock.GetUserString("Frame") == "true" ? true : false;
 
             this.InstanceDefinition = new ModelInstanceDefinition(RhinoBlock);
@@ -48,7 +49,7 @@ namespace Tile.Core.Util
             };
         }
         public override string TypeName => $"TilePatterns.{tilePatterns.label.ToString()}.{this.BlockName}";
-
+        public static BlockInstance Unset => null;
         public override string TypeDescription => "This is a Einstein hat tile";
 
         public override bool Equals(object obj)
@@ -60,7 +61,7 @@ namespace Tile.Core.Util
         }
         public override string ToString()
         {
-            return this.ToJson();
+            return $"BlockInstance.{BlockLabel}.{BlockName}";
         }
         public string ToJson()
         {
@@ -72,9 +73,19 @@ namespace Tile.Core.Util
                 {"BlockName", BlockName },
                 {"ID", this.BlockIndex.ToString()},
                 {"Frame", Instance.GetUserString("Frame") },
-                {"ColourFromObject", Instance.GetUserString("ColourFromObject") }
+                {"ColourFromObject", tilePatterns.ColourFromObject.ToString() }
             };
             return JsonConvert.SerializeObject(Infor, Formatting.Indented);
+        }
+        public BlockInstance ChangeLabel(Label label)
+        { 
+            this.BlockLabel = label;
+            
+            var Ref = RhinoDoc.ActiveDoc.InstanceDefinitions.Find(BlockName);
+            Ref.SetUserString("Label", label.ToString());
+            this.InstanceDefinition = Ref;
+
+            return this;
         }
         public override IGH_GeometricGoo DuplicateGeometry()
         {
@@ -137,6 +148,54 @@ namespace Tile.Core.Util
                 Guids = RhinoBlock.GetObjects().Select(x => x.Id).ToList()
             };
             return base.Read(reader);
+        }
+        public static implicit operator BlockInstance(string Name)
+        {
+            if (Name.Contains("."))
+            {
+                string pattern = Name.Split('.').Last();
+
+
+               return HatTileDoc.BlockInstances.Find(pattern)?.DuplicateGeometry() as BlockInstance;
+
+            }
+
+            return HatTileDoc.BlockInstances.Find(Name)?.DuplicateGeometry() as BlockInstance;
+        }
+
+        public static implicit operator string(BlockInstance instance)
+            => instance.BlockName;
+        public Guid Bake()
+        {
+            var m_Guid = Guid.NewGuid();
+            string[] LayerName = { "Hat_H", "Hat_H1", "Hat_T", "Hat_P", "Hat_F" };
+            var Doc = Rhino.RhinoDoc.ActiveDoc;
+            ObjectAttributes Att = new ObjectAttributes {
+                LayerIndex = Doc.Layers.FindName(LayerName[0]).Index
+            };
+            this.BakeGeometry(Doc, Att, ref m_Guid);
+            return m_Guid;
+        }
+        public override bool CastFrom(object source)
+        {
+            switch(source)
+            {
+                case BlockInstance system:
+                    Value = ((BlockInstance)source).Value;
+                    return true;
+                default: 
+                    return false;
+            }
+        }
+        public override bool CastTo<Q>(ref Q target)
+        {
+            if (typeof(Q).IsAssignableFrom(typeof(BlockInstance)))
+            {
+                target = (Q)(object)Value;
+                return true;
+            }
+
+            return false;
         }
     }
 }

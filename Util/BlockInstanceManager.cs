@@ -63,6 +63,7 @@ namespace Tile.Core.Util
         public void Clear()
         {
             this._BlockInstance.Clear();
+            Rhino.RhinoDoc.ActiveDoc.InstanceDefinitions.Clear();
         }
 
         public bool Contains(BlockInstance item)

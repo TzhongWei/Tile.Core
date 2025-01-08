@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Drawing;
 using Tile.Core.Util;
 using System.Numerics;
+using Rhino;
+using Rhino.UI.Theme;
 
 namespace Tile.Core.Grasshopper
 {
@@ -28,7 +30,11 @@ namespace Tile.Core.Grasshopper
 
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("TileInfo", "In", "The information about the file", GH_ParamAccess.item);
+            pManager.AddParameter(new GH_TileInstance(), "TileInstance", "ET", "The tile instance block", GH_ParamAccess.item);
+            pManager.AddGenericParameter("TileLabel", "Label", "The Label of the tile", GH_ParamAccess.item);
+            pManager.AddGeometryParameter("Patterns", "P", "The pattern setting of the tile", GH_ParamAccess.list);
+            pManager.AddColourParameter("PatternsColour", "PC", "The Colour setting of the tile", GH_ParamAccess.list);
+            pManager.AddTextParameter("Information", "Info", "the information about the tile", GH_ParamAccess.item);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
@@ -38,12 +44,24 @@ namespace Tile.Core.Grasshopper
             DA.GetData("TileName", ref Name);
             DA.GetData("Plane", ref PL);
             var TS = Transform.PlaneToPlane(Rhino.Geometry.Plane.WorldXY, PL);
-            var Tile = HatTileDoc.BlockInstances.Find(Name);
+            BlockInstance Tile = BlockInstance.Unset; 
 
+            Tile = (BlockInstance) Name;
+                
+            if (Tile == null) throw new Exception($"The block {Name} isn't defined in this block instances.");
             var TileCopy = (BlockInstance)Tile.DuplicateGeometry();
             TileCopy.Transform(TS);
 
-            DA.SetData("TileInfo", TileCopy);
+            var Colours = TileCopy.tilePatterns.ColourFromObject ? 
+                TileCopy.tilePatterns.PatternAtts.Select(x => x.ObjectColor) : 
+                TileCopy.tilePatterns.PatternAtts.Select(x => RhinoDoc.ActiveDoc.Layers.
+                FindIndex(x.LayerIndex).Color);
+
+            DA.SetData("TileLabel", TileCopy.BlockLabel);
+            DA.SetData("TileInstance", TileCopy);
+            DA.SetDataList("Patterns", TileCopy.tilePatterns.Patterns);
+            DA.SetDataList("PatternsColour", Colours);
+            DA.SetData("Information", TileCopy.ToJson());
         }
     }
 }

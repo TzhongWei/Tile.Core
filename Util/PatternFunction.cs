@@ -7,6 +7,7 @@ using System.Linq;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Rhino.Commands;
 
 namespace Tile.Core.Util
 {
@@ -94,9 +95,9 @@ namespace Tile.Core.Util
             PatternsManager[Index].Frame = true;
             //PatternsManager[Index].HasFrame = true;
         }
-        public static (int, int, int, int, int) SetNewBlock(ref TilePatterns[] PatternsManager, List<string> Names = null)
+        public static List<int> SetNewBlock(ref TilePatterns[] PatternsManager, List<string> Names = null)
         {
-            if (Names == null || Names.Count > 5) Names = new List<string>();
+            if (Names == null) Names = new List<string>();
             if (PatternsManager[0].Patterns.Count == 0)
                 NewSetFrame(ref PatternsManager, Label.H);
             if (PatternsManager[1].Patterns.Count == 0)
@@ -111,11 +112,11 @@ namespace Tile.Core.Util
             string[] PrefixName = { "H_0", "H1_0", "T_0", "P_0", "F_0" };
 
             //Set All Names
-
-            for (int i = Names.Count; i < PrefixName.Length; i++)
-            {
-                Names.Add(PrefixName[i]);
-            }
+            if(Names.Count == 0)
+                for (int i = 0; i < PrefixName.Length; i++)
+                {
+                    Names.Add(PrefixName[i]);
+                }
  
             var Doc = HatTileDoc.BlockInstances;
             // Check Repeated Name
@@ -157,7 +158,7 @@ namespace Tile.Core.Util
 
                 Names[i] = name; // Update the list with the unique name
             }
-            int[] ReturnID = { -1, -1, -1, -1, -1 };
+            var ReturnID = new List<int>();
 
             //Set New Block
             SetLayer();
@@ -167,6 +168,7 @@ namespace Tile.Core.Util
             //SetBlock
             for(int i = 0; i < Names.Count; i++)
             {
+                if (Names[i] == null) continue;
                 int LayerIndex = RhinoDoc.ActiveDoc.Layers.FindName(LayerName[i]).Index;
                 for (int j = 0; j < PatternsManager[i].PatternAtts.Count; j++)
                 {
@@ -176,14 +178,15 @@ namespace Tile.Core.Util
                     else
                         PatternsManager[i].PatternAtts[j].ColorSource = ObjectColorSource.ColorFromObject;
                 }
-                if (!HatTileDoc.AddNewHatInstance(Names[i], PatternsManager[i], out ReturnID[i]))
+                if (!HatTileDoc.AddNewHatInstance(Names[i], PatternsManager[i], out var ID))
                 {
                     throw new Exception("Instance Error.");
                 }
+                ReturnID.Add(ID);
             }
 
 
-            return (ReturnID[0], ReturnID[1], ReturnID[2], ReturnID[3], ReturnID[4]);
+            return ReturnID;
         }
         public static void SetLayer()
         {

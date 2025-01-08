@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tile.Core.Util
 {
-    public struct HatGroup<T>
+    public struct HatGroup<T> where T : class
     {
         public T Hat_H_ID { get; set; }
         public T Hat_H1_ID { get; set; }
@@ -101,5 +101,6 @@ namespace Tile.Core.Util
             }
             return true;
         }
+        public List<T> ToList() => new List<T> { this[0], this[1], this[2], this[3], this[4] };
     }
 }

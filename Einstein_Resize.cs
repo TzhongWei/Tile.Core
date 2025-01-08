@@ -17,7 +17,12 @@ namespace Tile.Core
         private double Hatsize = 1;
         public int[] BlocksId = new int[5];
         private Transform Translation = new Transform();
-        private HatGroup<int> _HatID;
+        private HatGroup<BlockInstance> _HatID = new HatGroup<BlockInstance>
+            (BlockInstance.Unset, 
+            BlockInstance.Unset,
+            BlockInstance.Unset, 
+            BlockInstance.Unset,
+            BlockInstance.Unset);
         public List<GeometryBase> HPatterns = new List<GeometryBase>();
         //private TilePatterns[] PatternsManager = new TilePatterns[5];
 
@@ -29,32 +34,43 @@ namespace Tile.Core
             this.Translation = Transform.Translation(new Vector3d(StartPt.X, StartPt.Y, StartPt.Z));
             Label[] LabelTags = { Label.H, Label.H1, Label.T, Label.P, Label.F };
         }
-        public bool SelectBlockID(List<string> Name)
+        public bool SetPermutedBlock(IEnumerable<BlockInstance> blocks)
         {
-            if (Name.Count != 5)
+            foreach(var block in blocks) 
             {
-                if (Name.Count > 5)
+                switch (block.BlockLabel)
                 {
-                    var NewName = new List<string>();
-                    for (int i = 0; i < 5; i++)
-                    {
-                        NewName.Add(Name[i]);
-                    }
+                    case (Label.H):
+                        _HatID[0] = block;
+                        break;
+                    case (Label.H1):
+                        _HatID[1] = block;
+                        break;
+                    case (Label.T):
+                        _HatID[2] = block;
+                        break;
+                    case Label.P:
+                        _HatID[3] = block;
+                        break;
+                    case Label.F:
+                        _HatID[4] = block;
+                        break;
                 }
-                else
-                    while (Name.Count != 5)
-                    {
-                        Name.Add(Name.Last());
-                    }
             }
 
-            for (int i = 0; i < Name.Count; i++)
+            if(_HatID.ToList().Select(x => x != null).Aggregate((Re1, Re2) => Re1 | Re2))
             {
-                _HatID[i] = HatTileDoc.BlockInstances.Find(Name[i]).BlockIndex;
-                if (_HatID[i] == -1)
-                    throw new Exception($"The {Name[i]} isn't existed.");
+                Label[] MatchLabel = new Label[]{Label.H, Label.H1, Label.T, Label.F, Label.P}; 
+                for(int i = 0; i < _HatID.Length; i++)
+                {
+                    if(_HatID[i] == null)
+                    {
+                        _HatID[i] = HatTileDoc.BlockInstances.FirstOrDefault(x => x.BlockLabel == MatchLabel[i]);
+                    }
+                }
             }
-            return true;
+
+            return !_HatID.ToList().Select(x => x != null).Aggregate((Re1, Re2) => Re1 | Re2);
         }
         public List<Curve> PreviewShape()
         {
@@ -81,16 +97,18 @@ namespace Tile.Core
             }
             return sortedCurve;
         }
-        public bool PlaceBlock(Einstein MonoTile)
+        public bool PlaceBlock(Einstein MonoTile, out List<BlockInstance> Tiles)
         {
+            Tiles = new List<BlockInstance>();
             if (this.Hatsize < 0 || MonoTile.Hat_Labels.Count != MonoTile.Hat_Transform.Count ||
                     MonoTile.Hat_Labels.Count < 0)
                 return false;
             var Doc = RhinoDoc.ActiveDoc;
             string[] LayerName = { "Hat_H", "Hat_H1", "Hat_T", "Hat_P", "Hat_F" };
-            if (_HatID.Hat_F_ID < 0)
+            
+            if (!_HatID.ToList().Select(x => x != null).Aggregate((Re1, Re2) => Re1 | Re2))
                 throw new Exception("Objects hasn't been defined as blocks");
-
+            
             var labels = MonoTile.Hat_Labels;
             var Transforms = MonoTile.Hat_Transform;
             var Scale = Transform.Scale(Point3d.Origin, Hatsize);
@@ -102,23 +120,23 @@ namespace Tile.Core
                 {
                     case "H":
                         Att.LayerIndex = Doc.Layers.FindName(LayerName[0]).Index;
-                        Doc.Objects.AddInstanceObject(_HatID[0], Final, Att);
+                        Tiles.Add((BlockInstance)_HatID[0].DuplicateGeometry().Transform(Final));
                         break;
                     case "H1":
                         Att.LayerIndex = Doc.Layers.FindName(LayerName[1]).Index;
-                        Doc.Objects.AddInstanceObject(_HatID[1], Final, Att);
+                        Tiles.Add((BlockInstance)_HatID[1].DuplicateGeometry().Transform(Final));
                         break;
                     case "T":
                         Att.LayerIndex = Doc.Layers.FindName(LayerName[2]).Index;
-                        Doc.Objects.AddInstanceObject(_HatID[2], Final, Att);
+                        Tiles.Add((BlockInstance)_HatID[2].DuplicateGeometry().Transform(Final));
                         break;
                     case "P":
                         Att.LayerIndex = Doc.Layers.FindName(LayerName[3]).Index;
-                        Doc.Objects.AddInstanceObject(_HatID[3], Final, Att);
+                        Tiles.Add((BlockInstance)_HatID[3].DuplicateGeometry().Transform(Final));
                         break;
                     case "F":
                         Att.LayerIndex = Doc.Layers.FindName(LayerName[4]).Index;
-                        Doc.Objects.AddInstanceObject(_HatID[4], Final, Att);
+                        Tiles.Add((BlockInstance)_HatID[4].DuplicateGeometry().Transform(Final));
                         break;
                     default:
                         return false;
